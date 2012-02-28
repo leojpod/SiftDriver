@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DC1B27F4-E8DF-4B23-AABB-80E7BF11A4C1}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>SiftDriver</RootNamespace>
+    <AssemblyName>Game</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <newfilesearch>OnLoadAutoInsert</newfilesearch>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <additionalargs>-pkg:wcf</additionalargs>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+    </Reference>
+    <Reference Include="Sifteo">
+      <HintPath>..\..\..\..\..\..\..\..\Applications\Sifteo_sdk_1_1_2\Siftdev.app\Contents\Resources\Runtimes\Mono\Current\sifteo\Sifteo.dll</HintPath>
+    </Reference>
+    <Reference Include="JsonFx">
+      <HintPath>..\..\..\..\..\..\..\..\Applications\Sifteo_sdk_1_1_2\Siftdev.app\Contents\Resources\Runtimes\Mono\Current\sifteo\JsonFx.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="SiftDriver.cs" />
+    <Compile Include="AppManager.cs" />
+    <Compile Include="Communication\AbsCommunication.cs" />
+    <Compile Include="Communication\AbsTcpCommunication.cs" />
+    <Compile Include="Communication\JsonTcpCommunication.cs" />
+    <Compile Include="Utils\StreamReaderThread.cs" />
+    <Compile Include="Applications\Application.cs" />
+    <Compile Include="Applications\DefaultApp.cs" />
+    <Compile Include="UIComponents\UIText.cs" />
+    <Compile Include="Utils\CubeInstallator.cs" />
+    <Compile Include="UIComponents\UIBreathing.cs" />
+    <Compile Include="Communication\Protocols\Message.cs" />
+    <Compile Include="Communication\Protocols\AuthenticationProtocol.cs" />
+    <Compile Include="DriverInfromation.cs" />
+    <Compile Include="NetworkThread.cs" />
+    <Compile Include="Communication\Protocols\GeneralCommunicationProtocol.cs" />
+    <Compile Include="Utils\JsonProtocolHelper.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Utils\" />
+    <Folder Include="Events\" />
+    <Folder Include="UIComponents\" />
+    <Folder Include="Communication\Protocols\" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="Flat" ResourceNamePolicy="FileName" />
+          <TextStylePolicy TabWidth="2" RemoveTrailingWhitespace="True" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

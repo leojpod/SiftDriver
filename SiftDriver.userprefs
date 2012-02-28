@@ -1,0 +1,33 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="SiftDriver/Communication/Protocols/GeneralCommunicationProtocol.cs">
+    <Files>
+      <File FileName="SiftDriver/SiftDriver.cs" Line="12" Column="7" />
+      <File FileName="SiftDriver/Applications/DefaultApp.cs" Line="50" Column="41" />
+      <File FileName="SiftDriver/Applications/Application.cs" Line="1" Column="1" />
+      <File FileName="SiftDriver/Communication/Protocols/AuthenticationProtocol.cs" Line="18" Column="22" />
+      <File FileName="SiftDriver/AppManager.cs" Line="54" Column="65" />
+      <File FileName="SiftDriver/Communication/Protocols/GeneralCommunicationProtocol.cs" Line="26" Column="28" />
+      <File FileName="SiftDriver/Utils/JsonProtocolHelper.cs" Line="30" Column="82" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="SiftDriver" expanded="True">
+            <Node name="Applications" expanded="True" />
+            <Node name="Communication" expanded="True">
+              <Node name="Protocols" expanded="True">
+                <Node name="GeneralCommunicationProtocol.cs" selected="True" />
+              </Node>
+            </Node>
+            <Node name="Utils" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
