@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Sifteo;
 using SiftDriver;
 using SiftDriver.Applications;
@@ -13,7 +14,8 @@ namespace SiftDriver
     void FinalizedAuthentication();
     DriverInformation DriverInfo {
       get;}
-
+    Cube this[String id]{ get;}
+    void TurnOffDriver();
   }
   public sealed class AppManagerAccess
   {
@@ -27,7 +29,15 @@ namespace SiftDriver
       private string _appID;
       //public CubeSet AvailableCubes{ get{return _availableCubes;}}
       private GeneralCommunicationProtocol _generalComm;
-
+      public Cube this[String id]{
+        get{
+          Cube c = this._setOfCube.CubeByID(id);
+          if(c == null){
+            throw new KeyNotFoundException(id);
+          }
+          return c;
+        }
+      }
       internal AppManagerImpl ()
       {
         _defaultApp = new DefaultApp ();
@@ -60,6 +70,10 @@ namespace SiftDriver
         get {
           return new DriverInformation(_setOfCube, _appID);
         }
+      }
+
+      public void TurnOffDriver(){
+        throw new Exception("the game is over");
       }
     }
 

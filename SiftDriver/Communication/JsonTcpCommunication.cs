@@ -3,6 +3,8 @@ using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
+using Sifteo;
+
 using JsonFx.Json;
 using JsonFx.Serialization;
 using JsonFx.Serialization.Resolvers;
@@ -50,6 +52,7 @@ namespace SiftDriver.Communication
       jsonMsg["msg"] = obj;
 
       _jsonOut.Write(jsonMsg, this.Output);
+      Log.Info("sending: --> \n\t"+_jsonOut.Write(jsonMsg));
       this.Output.Flush();
     }
 

@@ -31,7 +31,13 @@ namespace SiftDriver
 
     // development mode only
     // start SiftDriver as an executable and run it, waiting for Siftrunner to connect
-    static void Main(string[] args) { new SiftDriver().Run(); }
+    static void Main(string[] args) {
+      try{
+        new SiftDriver().Run();
+      }catch (Exception ex){
+        Log.Info(ex.Message);
+      }
+    }
   }
 }
 

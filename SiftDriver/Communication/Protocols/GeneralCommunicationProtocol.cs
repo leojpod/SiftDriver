@@ -4,6 +4,7 @@ using System.Threading;
 using System.Collections.Generic;
 
 using SiftDriver.Communication;
+using SiftDriver.Events;
 using SiftDriver.Utils;
 
 using Sifteo;
@@ -23,6 +24,10 @@ namespace SiftDriver.Communication.Protocols
       _containingThread = new Thread(new ThreadStart(_readerThread.ReadingLoop));
       //then setup the callbacks and run it!
       _readerThread.IncomingMessage += delegate(Dictionary<string,object> msg){
+        if(msg == null){
+          Log.Info("the comminucation with the API is over or lost, we should do something about it");
+          AppManagerAccess.Instance.TurnOffDriver();
+        }
         if(msg.ContainsKey("flow")
            && msg["flow"].GetType().Equals(typeof(String))
            && msg.ContainsKey("msg")
@@ -49,6 +54,19 @@ namespace SiftDriver.Communication.Protocols
 
     private void onCtrlMessage(Dictionary<string,object> msg){
       Log.Info("the following message has been received: <<<"+ new JsonWriter().Write(msg)+">>>" );
+      try{
+        string command = JsonProtocolHelper.AssertTypeInDic<string>(msg, "command");
+        switch(command){
+        case "reportAllEvents":
+          String[] devices = JsonProtocolHelper.AssertTypeInDic<String[]>(msg, "params");
+          StartAllEventsReporting(devices);
+          break;
+        default:
+          break;
+        }
+      }catch (Exception ex){
+        Log.Error("something was wrong with this control message: <<<"+new JsonWriter().Write(msg)+" >>> \n\tThe exception was: "+ex.Message );
+      }
     }
 
     private void onEventMessage(Dictionary<string,object> msg){
@@ -86,6 +104,19 @@ namespace SiftDriver.Communication.Protocols
       }
     }
 
+    private void StartAllEventsReporting(string[] devices){
+      //TODO_LATER: move some of this code somewhere else to make it more readable
+      AppManager mgr = AppManagerAccess.Instance;
+      foreach(string cubeId in devices){
+        try{
+          Cube c  = mgr[cubeId];
+          CubeEventReporter cReporter = new CubeEventReporter(this);
+          cReporter.ReportAllEvents(c);
+        } catch (KeyNotFoundException ex){
+          Log.Error("the following id doesn't match any cube! --> "+cubeId+"\n\t exception message: "+ex.Message);
+        }
+      }
+    }
 
     private class JsonReaderThread {
       private volatile bool _running = true;
