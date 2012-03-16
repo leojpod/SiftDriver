@@ -1,14 +1,22 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="SiftDriver/Communication/Protocols/GeneralCommunicationProtocol.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="SiftDriver/Events/CubeEventReporter.cs">
     <Files>
-      <File FileName="SiftDriver/SiftDriver.cs" Line="12" Column="7" />
-      <File FileName="SiftDriver/Applications/DefaultApp.cs" Line="50" Column="41" />
+      <File FileName="../../02-FirstDesign/SiftDriver/SiftDriver/AppManager.cs" Line="18" Column="28" />
+      <File FileName="../../02-FirstDesign/SiftDriver/SiftDriver/Communication/Protocols/GeneralCommunicationProtocol.cs" Line="29" Column="37" />
+      <File FileName="../../02-FirstDesign/SiftDriver/SiftDriver/Utils/JsonProtocolHelper.cs" Line="41" Column="1" />
+      <File FileName="../../02-FirstDesign/SiftDriver/SiftDriver/Events/CubeEventReporter.cs" Line="52" Column="24" />
+      <File FileName="../../02-FirstDesign/SiftDriver/SiftDriver/Communication/JsonTcpCommunication.cs" Line="55" Column="60" />
+      <File FileName="../../02-FirstDesign/SiftDriver/SiftDriver/SiftDriver.cs" Line="40" Column="6" />
+      <File FileName="SiftDriver/SiftDriver.cs" Line="1" Column="1" />
+      <File FileName="SiftDriver/Applications/DefaultApp.cs" Line="1" Column="1" />
       <File FileName="SiftDriver/Applications/Application.cs" Line="1" Column="1" />
-      <File FileName="SiftDriver/Communication/Protocols/AuthenticationProtocol.cs" Line="18" Column="22" />
-      <File FileName="SiftDriver/AppManager.cs" Line="54" Column="65" />
+      <File FileName="SiftDriver/Communication/Protocols/AuthenticationProtocol.cs" Line="1" Column="1" />
+      <File FileName="SiftDriver/AppManager.cs" Line="1" Column="1" />
       <File FileName="SiftDriver/Communication/Protocols/GeneralCommunicationProtocol.cs" Line="26" Column="28" />
-      <File FileName="SiftDriver/Utils/JsonProtocolHelper.cs" Line="30" Column="82" />
+      <File FileName="SiftDriver/Utils/JsonProtocolHelper.cs" Line="1" Column="1" />
+      <File FileName="SiftDriver/Utils/CubeInstallator.cs" Line="18" Column="1" />
+      <File FileName="SiftDriver/Events/CubeEventReporter.cs" Line="77" Column="38" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -16,10 +24,12 @@
           <Node name="SiftDriver" expanded="True">
             <Node name="Applications" expanded="True" />
             <Node name="Communication" expanded="True">
-              <Node name="Protocols" expanded="True">
-                <Node name="GeneralCommunicationProtocol.cs" selected="True" />
-              </Node>
+              <Node name="Protocols" expanded="True" />
             </Node>
+            <Node name="Events" expanded="True">
+              <Node name="CubeEventReporter.cs" selected="True" />
+            </Node>
+            <Node name="UIComponents" expanded="True" />
             <Node name="Utils" expanded="True" />
           </Node>
         </State>

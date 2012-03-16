@@ -27,7 +27,7 @@ namespace SiftDriver.Events
 
     private void TiltNotification (Cube c, int x, int y, int z)
     {
-      //if(!c.IsShaking){
+      if(!c.IsShaking){
         //same remark than for flipnotification
         Dictionary<String, Object> parameters = new Dictionary<String, Object>();
         String msg = "tilt";
@@ -35,7 +35,7 @@ namespace SiftDriver.Events
         parameters.Add("y", y);
         parameters.Add("z", z);
         this.NotifyEvent(msg, c, parameters);
-      //}
+      }
     }
 
     private void ShackStoppedNotification (Cube c, int duration)

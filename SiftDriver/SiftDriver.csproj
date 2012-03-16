@@ -65,6 +65,7 @@
     <Compile Include="Communication\Protocols\GeneralCommunicationProtocol.cs" />
     <Compile Include="Utils\JsonProtocolHelper.cs" />
     <Compile Include="Events\CubeEventReporter.cs" />
+    <Compile Include="Utils\ImageDisplayer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
