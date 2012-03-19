@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using SiftDriver;
+using SiftDriver.Utils;
 using Sifteo;
 
 namespace SiftDriver.Utils
@@ -10,7 +12,7 @@ namespace SiftDriver.Utils
       p.RenderOnCube(c);
     }
   }
-  
+
   public class JsonPicture
   {
     /* JSON representation of a picture in our case:
@@ -24,24 +26,26 @@ namespace SiftDriver.Utils
      *      { color: ... }
      *    ] }
      */
-    public JsonColorBlocks[] pictureBlocks;
+    public JsonColorBlocks[] pictureBlocks {get; set;}
 
-    public JsonColorBlocks this[int idx] { get{return pictureBlocks[idx]; } }
+    //public JsonColorBlocks this[int idx] { get{return pictureBlocks[idx]; } }
 
     public void RenderOnCube(Cube c){
       foreach(JsonColorBlocks cBlocks in pictureBlocks){
         cBlocks.RenderOnCube(c);
       }
     }
+
   }
 
   public class JsonColorBlocks
   {
     // a color block represent only the {color : ... [ ]} part of a JsonPicture
-    public JsonColor color;
-    public JsonSimpleBlock[] blocks;
+    public JsonColor color {get; set;}
+    public JsonSimpleBlock[] blocks {get; set;}
 
     public void RenderOnCube(Cube c){
+      Log.Info("preparing to print block of the color "+color.r+","+color.g+","+color.b);
       foreach(JsonSimpleBlock block in this.blocks){
         block.PrintColorOnCube(c, color.GetSifteoColor());
       }
@@ -49,7 +53,9 @@ namespace SiftDriver.Utils
   }
   public class JsonColor
   {
-    public int r,g,b;
+    public int r {get; set;}
+    public int g {get; set;}
+    public int b {get; set;}
 
     public override bool Equals (object obj)
     {
@@ -70,14 +76,21 @@ namespace SiftDriver.Utils
     }
 
     public Sifteo.Color GetSifteoColor(){
-      return new Sifteo.Color(r, g, b);
+      try{
+        Sifteo.Color c =  new Sifteo.Color(r, g, b);
+        return c;
+      }catch(Exception e){
+        throw new Exception("something went wrong when trying to deal with the color ("+r+", "+g+", "+b+")");
+      }
     }
   }
   public class JsonSimpleBlock
   {
     // represent the {x:int, y:int, ...}
-    public int x,y;
-    public int w,h;
+    public int x {get; set;}
+    public int y {get; set;}
+    public int w {get; set;}
+    public int h {get; set;}
 
     public void PrintColorOnCube(Cube c, Sifteo.Color color){
       c.FillRect(color, x, y, w, h);

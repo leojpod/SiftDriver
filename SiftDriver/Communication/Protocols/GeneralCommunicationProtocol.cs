@@ -75,7 +75,7 @@ namespace SiftDriver.Communication.Protocols
       String command  = JsonProtocolHelper.AssertTypeInDic<String>(msg, "command");
       if(command.Equals("show_color")){
         //then read which color is asked
-        Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>>(msg, "param");
+        Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>>(msg, "params");
         //read the consered cubes
         String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]>(param, "cubes");
         //read the rgb value!
@@ -101,11 +101,15 @@ namespace SiftDriver.Communication.Protocols
           }
         }
       }else if(command.Equals("show_json_picture")){
-        Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>> (msg, "param");
+        Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>> (msg, "params");
 
         String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]>(param, "cubes");
 
-        JsonPicture picture = JsonProtocolHelper.AssertTypeInDic<JsonPicture>(param, "picture");
+        //JsonPicture picture = JsonPicture.createFromDictionary(JsonProtocolHelper.AssertTypeInDic<Dictionary<String, Object>>(param, "picture"));
+
+        object objPicture = JsonProtocolHelper.AssertField(param, "picture");
+
+        JsonPicture picture = new JsonReader().Read<JsonPicture>(new JsonWriter().Write(objPicture));
 
         AppManager mgr = AppManagerAccess.Instance;
         CubeSet cubes = mgr.AvailableCubes; //TODO_LATER : this is not a correct way of accessing the cubes!
@@ -115,6 +119,7 @@ namespace SiftDriver.Communication.Protocols
           })) {
             //TODO_LATER : remove the found Id of the affectedCubes array to speed up the process
             ImageDisplayer.DisplayPicture(c, picture);
+            Log.Info("the picture is ready to be displayed on the cube!");
             c.Paint ();
           }
         }
