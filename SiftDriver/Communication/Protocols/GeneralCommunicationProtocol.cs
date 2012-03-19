@@ -71,34 +71,51 @@ namespace SiftDriver.Communication.Protocols
 
     private void onEventMessage(Dictionary<string,object> msg){
       Log.Info("the following message has been received: <<<"+ new JsonWriter().Write(msg)+">>>" );
-      //this is just a simple ugly draft: it needs to be done in a much better way later!
-      if(msg.ContainsKey("command") && msg["command"].Equals("show_color")){
+      //this is just a simple ugly draft: it needs to be done in a much better way later! this treatment need to be moved to the folder Command and to be sent to a CommandFactory and then apply from here
+      String command  = JsonProtocolHelper.AssertTypeInDic<String>(msg, "command");
+      if(command.Equals("show_color")){
         //then read which color is asked
-        if(msg.ContainsKey("param") && msg["param"].GetType().Equals(typeof(Dictionary<String,Object>))){
-          Dictionary<string,object> param = (Dictionary<string, object>) msg["param"];
-          //read the consered cubes
-          String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]>(param, "cubes");
-          //read the rgb value!
-          Dictionary<string, object> colors = JsonProtocolHelper.AssertTypeInDic<Dictionary<String, Object>>(param, "color");
-          Color fillingColor =
-            new Color(
-              JsonProtocolHelper.AssertTypeInDic<int>(colors,"r"),
-              JsonProtocolHelper.AssertTypeInDic<int>(colors,"g"),
-              JsonProtocolHelper.AssertTypeInDic<int>(colors,"b")
-              );
-          Color testColor = new Color(Color.RgbData(120,39,80));
-          Log.Info("testColor: "+testColor.Data);
-          AppManager mgr = AppManagerAccess.Instance;
-          CubeSet cubes = mgr.AvailableCubes; //TODO_LATER : this is not a correct way of accessing the cubes!
-          foreach(Cube c in cubes){
-            if(Array.Exists(affectedCubes, delegate(String obj) {
-                return obj.Equals(c.UniqueId);
-              }))
-            {
-              //TODO_LATER : remove the found Id of the affectedCubes array to speed up the process
-              c.FillScreen(fillingColor);
-              c.Paint();
-            }
+        Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>>(msg, "param");
+        //read the consered cubes
+        String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]>(param, "cubes");
+        //read the rgb value!
+        Dictionary<string, object> colors = JsonProtocolHelper.AssertTypeInDic<Dictionary<String, Object>>(param, "color");
+        Color fillingColor =
+          new Color(
+            JsonProtocolHelper.AssertTypeInDic<int>(colors,"r"),
+            JsonProtocolHelper.AssertTypeInDic<int>(colors,"g"),
+            JsonProtocolHelper.AssertTypeInDic<int>(colors,"b")
+            );
+        Color testColor = new Color(Color.RgbData(120,39,80));
+        Log.Info("testColor: "+testColor.Data);
+        AppManager mgr = AppManagerAccess.Instance;
+        CubeSet cubes = mgr.AvailableCubes; //TODO_LATER : this is not a correct way of accessing the cubes!
+        foreach(Cube c in cubes){
+          if(Array.Exists(affectedCubes, delegate(String obj) {
+              return obj.Equals(c.UniqueId);
+            }))
+          {
+            //TODO_LATER : remove the found Id of the affectedCubes array to speed up the process
+            c.FillScreen(fillingColor);
+            c.Paint();
+          }
+        }
+      }else if(command.Equals("show_json_picture")){
+        Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>> (msg, "param");
+
+        String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]>(param, "cubes");
+
+        JsonPicture picture = JsonProtocolHelper.AssertTypeInDic<JsonPicture>(param, "picture");
+
+        AppManager mgr = AppManagerAccess.Instance;
+        CubeSet cubes = mgr.AvailableCubes; //TODO_LATER : this is not a correct way of accessing the cubes!
+        foreach (Cube c in cubes) {
+          if (Array.Exists (affectedCubes, delegate(String obj) {
+            return obj.Equals (c.UniqueId);
+          })) {
+            //TODO_LATER : remove the found Id of the affectedCubes array to speed up the process
+            ImageDisplayer.DisplayPicture(c, picture);
+            c.Paint ();
           }
         }
       }
