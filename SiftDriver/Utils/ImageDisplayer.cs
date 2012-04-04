@@ -9,7 +9,9 @@ namespace SiftDriver.Utils
   public class ImageDisplayer
   {
     public static void DisplayPicture(Cube c, JsonPicture p){
+      Log.Debug ("starting the picture display : "+DateTime.Now.ToLongTimeString());
       p.RenderOnCube(c);
+      Log.Debug("Done with the picture display : "+DateTime.Now.ToLongTimeString());
     }
   }
 
@@ -45,7 +47,7 @@ namespace SiftDriver.Utils
     public JsonSimpleBlock[] blocks {get; set;}
 
     public void RenderOnCube(Cube c){
-      Log.Info("preparing to print block of the color "+color.r+","+color.g+","+color.b);
+      //Log.Info("preparing to print block of the color "+color.r+","+color.g+","+color.b);
       foreach(JsonSimpleBlock block in this.blocks){
         block.PrintColorOnCube(c, color.GetSifteoColor());
       }

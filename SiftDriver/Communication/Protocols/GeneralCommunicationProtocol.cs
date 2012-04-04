@@ -73,6 +73,9 @@ namespace SiftDriver.Communication.Protocols
       Log.Info("the following message has been received: <<<"+ new JsonWriter().Write(msg)+">>>" );
       //this is just a simple ugly draft: it needs to be done in a much better way later! this treatment need to be moved to the folder Command and to be sent to a CommandFactory and then apply from here
       String command  = JsonProtocolHelper.AssertTypeInDic<String>(msg, "command");
+      Log.Debug (DateTime.Now.ToLongTimeString()+" >> dealing with the command: "+command);
+
+
       if(command.Equals("show_color")){
         //then read which color is asked
         Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>>(msg, "params");
@@ -119,8 +122,11 @@ namespace SiftDriver.Communication.Protocols
           })) {
             //TODO_LATER : remove the found Id of the affectedCubes array to speed up the process
             ImageDisplayer.DisplayPicture(c, picture);
-            Log.Info("the picture is ready to be displayed on the cube!");
+            //Log.Info("the picture is ready to be displayed on the cube!");
+            Log.Debug (DateTime.Now.ToLongTimeString()+" before c.paint()");
             c.Paint ();
+            Log.Debug (DateTime.Now.ToLongTimeString()+" after c.paint()");
+
           }
         }
       }
@@ -160,7 +166,7 @@ namespace SiftDriver.Communication.Protocols
         }//else
 
         while(_running){
-          Log.Debug("reading a dictionary ... ");
+          //Log.Debug("reading a dictionary ... ");
           Dictionary<string, object> msg = _communication.Read();
           IncomingMessage(msg);//notify it!
         }
