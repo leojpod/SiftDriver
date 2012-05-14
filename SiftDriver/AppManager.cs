@@ -53,8 +53,8 @@ namespace SiftDriver
       {
         _setOfCube = cSet;
         _availableCubes = cSet;
-        _defaultApp.SetupDefaultApp();
         _appID = appID;
+        _defaultApp.SetupDefaultApp();
         Log.Debug("SetupAppManager() over");
       }
       public void FinalizedAuthentication ()

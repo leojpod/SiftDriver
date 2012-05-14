@@ -25,21 +25,30 @@ namespace SiftDriver.Applications
       CubeSet cubestoInstall = _appMgr.AvailableCubes;
       foreach ( Cube aCube in cubestoInstall.toArray()){
         aCube.FillScreen(deepBlue);
-        aCube.ButtonEvent += delegate(Cube c, bool pressed) {
-          if(pressed){
-            Log.Debug("DefaultApp received an event!");
-            this.AuthenticateSiftDriver();
-            CubeSet stillAvaiableCubes = _appMgr.AvailableCubes;
-            //_installator.Install(stillAvaiableCubes, delegate(Cube justACube){
-            Utils.CubeInstallator.Install(stillAvaiableCubes, delegate(Cube justACube){
-              justACube.ClearEvents();
-              justACube.FillScreen(somehowRed);
-              justACube.Paint();
-            });
-          }
-        };
+//        aCube.ButtonEvent += delegate(Cube c, bool pressed) {
+//          if(pressed){
+//            Log.Debug("DefaultApp received an event!");
+//            this.AuthenticateSiftDriver();
+//            CubeSet stillAvaiableCubes = _appMgr.AvailableCubes;
+//            //_installator.Install(stillAvaiableCubes, delegate(Cube justACube){
+//            Utils.CubeInstallator.Install(stillAvaiableCubes, delegate(Cube justACube){
+//              justACube.ClearEvents();
+//              justACube.FillScreen(somehowRed);
+//              justACube.Paint();
+//            });
+//          }
+//        };
         aCube.Paint();
       }
+
+      this.AuthenticateSiftDriver();
+//      CubeSet stillAvaiableCubes = _appMgr.AvailableCubes;
+//      //_installator.Install(stillAvaiableCubes, delegate(Cube justACube){
+      Utils.CubeInstallator.Install(cubestoInstall, delegate(Cube justACube){
+        justACube.ClearEvents();
+        justACube.FillScreen(somehowRed);
+        justACube.Paint();
+      });
 		}
 
     private void AuthenticateSiftDriver(){
