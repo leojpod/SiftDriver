@@ -52,7 +52,7 @@ namespace SiftDriver.Communication
       jsonMsg["msg"] = obj;
 
       _jsonOut.Write(jsonMsg, this.Output);
-      Log.Info("sending: --> \n\t"+_jsonOut.Write(jsonMsg));
+      //Log.Info("sending: --> \n\t"+_jsonOut.Write(jsonMsg));
       this.Output.Flush();
     }
 

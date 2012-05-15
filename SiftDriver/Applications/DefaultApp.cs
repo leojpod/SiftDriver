@@ -49,6 +49,9 @@ namespace SiftDriver.Applications
         justACube.FillScreen(somehowRed);
         justACube.Paint();
       });
+      Cube c = cubestoInstall[0];
+      //TextDisplayer.DisplayMessageV3(c, "connected\r\nto the server", new SiftColor(255, 255, 255));
+      c.Paint();
 		}
 
     private void AuthenticateSiftDriver(){

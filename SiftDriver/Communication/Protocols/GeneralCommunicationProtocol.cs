@@ -18,6 +18,8 @@ namespace SiftDriver.Communication.Protocols
   {
     private JsonReaderThread _readerThread;
     private Thread _containingThread;
+    private AppManager _appMgr = AppManagerAccess.Instance;
+
     public GeneralCommunicationProtocol(TcpClient socket) : base(socket)
     {
       _readerThread = new JsonReaderThread(this);
@@ -58,6 +60,7 @@ namespace SiftDriver.Communication.Protocols
         string command = JsonProtocolHelper.AssertTypeInDic<string>(msg, "command");
         switch(command){
         case "reportAllEvents":
+          Log.Debug("dealing with the command reportAllEvents");
           String[] devices = JsonProtocolHelper.AssertTypeInDic<String[]>(msg, "params");
           StartAllEventsReporting(devices);
           break;
@@ -74,61 +77,20 @@ namespace SiftDriver.Communication.Protocols
       //this is just a simple ugly draft: it needs to be done in a much better way later! this treatment need to be moved to the folder Command and to be sent to a CommandFactory and then apply from here
       String command  = JsonProtocolHelper.AssertTypeInDic<String>(msg, "command");
       Log.Debug (DateTime.Now.ToLongTimeString()+" >> dealing with the command: "+command);
+      Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>> (msg, "params");
 
-
-      if(command.Equals("show_color")){
-        //then read which color is asked
-        Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>>(msg, "params");
-        //read the consered cubes
-        String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]>(param, "cubes");
-        //read the rgb value!
-        Dictionary<string, object> colors = JsonProtocolHelper.AssertTypeInDic<Dictionary<String, Object>>(param, "color");
-        Color fillingColor =
-          new Color(
-            JsonProtocolHelper.AssertTypeInDic<int>(colors,"r"),
-            JsonProtocolHelper.AssertTypeInDic<int>(colors,"g"),
-            JsonProtocolHelper.AssertTypeInDic<int>(colors,"b")
-            );
-        Color testColor = new Color(Color.RgbData(120,39,80));
-        Log.Info("testColor: "+testColor.Data);
-        AppManager mgr = AppManagerAccess.Instance;
-        CubeSet cubes = mgr.AvailableCubes; //TODO_LATER : this is not a correct way of accessing the cubes!
-        foreach(Cube c in cubes){
-          if(Array.Exists(affectedCubes, delegate(String obj) {
-              return obj.Equals(c.UniqueId);
-            }))
-          {
-            //TODO_LATER : remove the found Id of the affectedCubes array to speed up the process
-            c.FillScreen(fillingColor);
-            c.Paint();
-          }
-        }
-      }else if(command.Equals("show_json_picture")){
-        Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>> (msg, "params");
-
-        String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]>(param, "cubes");
-
-        //JsonPicture picture = JsonPicture.createFromDictionary(JsonProtocolHelper.AssertTypeInDic<Dictionary<String, Object>>(param, "picture"));
-
-        object objPicture = JsonProtocolHelper.AssertField(param, "picture");
-
-        JsonPicture picture = new JsonReader().Read<JsonPicture>(new JsonWriter().Write(objPicture));
-
-        AppManager mgr = AppManagerAccess.Instance;
-        CubeSet cubes = mgr.AvailableCubes; //TODO_LATER : this is not a correct way of accessing the cubes!
-        foreach (Cube c in cubes) {
-          if (Array.Exists (affectedCubes, delegate(String obj) {
-            return obj.Equals (c.UniqueId);
-          })) {
-            //TODO_LATER : remove the found Id of the affectedCubes array to speed up the process
-            ImageDisplayer.DisplayPicture(c, picture);
-            //Log.Info("the picture is ready to be displayed on the cube!");
-            Log.Debug (DateTime.Now.ToLongTimeString()+" before c.paint()");
-            c.Paint ();
-            Log.Debug (DateTime.Now.ToLongTimeString()+" after c.paint()");
-
-          }
-        }
+      switch(command){
+      case "show_color":
+        this.ShowColor(param);
+        break;
+      case "show_json_picture":
+        this.ShowJsonPicture(param);
+        break;
+      case "show_message":
+        this.ShowMessage(param);
+        break;
+      default:
+        break;
       }
     }
 
@@ -138,13 +100,84 @@ namespace SiftDriver.Communication.Protocols
       foreach(string cubeId in devices){
         try{
           Cube c  = mgr[cubeId];
-          CubeEventReporter cReporter = new CubeEventReporter(this);
-          cReporter.ReportAllEvents(c);
+          if(!CubeEventReporter.ExistsReporter(cubeId)){
+            //CubeEventReporter cReporter = 
+            new CubeEventReporter(this,c);
+          }else{
+            Log.Debug("this cube is already being reported");
+          }
         } catch (KeyNotFoundException ex){
           Log.Error("the following id doesn't match any cube! --> "+cubeId+"\n\t exception message: "+ex.Message);
         }
       }
     }
+
+    private delegate void OnCube(Cube c);
+    private void BrowseCubes(OnCube method, String[] affectedCubes){
+      CubeSet cubes = _appMgr.AvailableCubes;
+      foreach(Cube c in cubes){
+        if (Array.Exists (affectedCubes, delegate(String obj) {
+          return obj.Equals (c.UniqueId);
+        })){
+          //TODO_LATER : remove the found Id of the affectedCubes array to speed up the process
+          method(c);
+        }
+      }
+    }
+
+    private void ShowColor(Dictionary<string, object> param){
+      //then read which color is asked
+//      Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>>(msg, "params");
+      //read the consered cubes
+      String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]>(param, "cubes");
+      //read the rgb value!
+      Dictionary<string, object> colors = JsonProtocolHelper.AssertTypeInDic<Dictionary<String, Object>>(param, "color");
+      Color fillingColor =
+        new Color(
+          JsonProtocolHelper.AssertTypeInDic<int>(colors,"r"),
+          JsonProtocolHelper.AssertTypeInDic<int>(colors,"g"),
+          JsonProtocolHelper.AssertTypeInDic<int>(colors,"b")
+          );
+      BrowseCubes( delegate(Cube c) {
+          c.FillScreen(fillingColor);
+          //TextDisplayer.DisplayMessage(c,"this is a color", new SiftColor(Color.White));
+          c.Paint();
+        }, affectedCubes);
+    }
+    private void ShowJsonPicture(Dictionary<string, object> param) {
+//      Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>> (msg, "params");
+      String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]>(param, "cubes");
+      //JsonPicture picture = JsonPicture.createFromDictionary(JsonProtocolHelper.AssertTypeInDic<Dictionary<String, Object>>(param, "picture"));
+      object objPicture = JsonProtocolHelper.AssertField(param, "picture");
+      JsonPicture picture = new JsonReader().Read<JsonPicture>(new JsonWriter().Write(objPicture));
+      BrowseCubes( delegate(Cube c) {
+          ImageDisplayer.DisplayPicture(c, picture);
+          //Log.Info("the picture is ready to be displayed on the cube!");
+          Log.Debug (DateTime.Now.ToLongTimeString()+" before c.paint()");
+          c.Paint ();
+          Log.Debug (DateTime.Now.ToLongTimeString()+" after c.paint()");
+        }, affectedCubes);
+
+    }
+    private void ShowMessage(Dictionary<string, object> param){
+      String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]>(param, "cubes");
+      String text_msg = JsonProtocolHelper.AssertTypeInDic<String>(param, "text_msg");
+      //Dictionary<string, object> colors = JsonProtocolHelper.AssertTypeInDic<Dictionary<String, Object>>(param, "color");
+//      SiftColor textColor = new SiftColor(colors);
+      SiftColor textColor = new SiftColor(255,255,255);
+//      Color textColor =
+//        new Color(
+//          JsonProtocolHelper.AssertTypeInDic<int>(colors,"r"),
+//          JsonProtocolHelper.AssertTypeInDic<int>(colors,"g"),
+//          JsonProtocolHelper.AssertTypeInDic<int>(colors,"b")
+//          );
+      BrowseCubes(delegate(Cube c) {
+        TextDisplayer.DisplayMessage(c, text_msg, textColor);
+        c.Paint();
+        }, affectedCubes);
+    }
+
+
 
     private class JsonReaderThread {
       private volatile bool _running = true;

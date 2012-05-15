@@ -8,7 +8,7 @@
     <ProjectGuid>{DC1B27F4-E8DF-4B23-AABB-80E7BF11A4C1}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>SiftDriver</RootNamespace>
-    <AssemblyName>Game</AssemblyName>
+    <AssemblyName>SiftDriver</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -20,7 +20,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>..\bin</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,7 +30,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>..\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -43,6 +43,11 @@
     </Reference>
     <Reference Include="JsonFx">
       <HintPath>..\..\..\..\..\..\..\..\Applications\Sifteo_sdk_1_1_2\Siftdev.app\Contents\Resources\Runtimes\Mono\Current\sifteo\JsonFx.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +71,8 @@
     <Compile Include="Utils\JsonProtocolHelper.cs" />
     <Compile Include="Events\CubeEventReporter.cs" />
     <Compile Include="Utils\ImageDisplayer.cs" />
+    <Compile Include="Utils\TextDisplayer.cs" />
+    <Compile Include="Utils\SiftColor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -73,7 +80,6 @@
     <Folder Include="Events\" />
     <Folder Include="UIComponents\" />
     <Folder Include="Communication\Protocols\" />
-    <Folder Include="Communication\Commands\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
@@ -82,6 +88,15 @@
           <DotNetNamingPolicy DirectoryNamespaceAssociation="Flat" ResourceNamePolicy="FileName" />
           <TextStylePolicy TabWidth="2" RemoveTrailingWhitespace="True" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
         </Policies>
+        <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="Makefile" SyncReferences="true">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RESOURCES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFERENCES" />
+          <AsmRefVar Sync="true" Name="REFERENCES" />
+          <ProjectRefVar Sync="true" Name="REFERENCES" />
+        </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>

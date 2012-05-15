@@ -7,22 +7,30 @@ namespace SiftDriver.Events
 {
   public class CubeEventReporter
   {
+    private static List<CubeEventReporter> Reporters = new List<CubeEventReporter>();
     private JsonTcpCommunication _com;
+    private Cube _c;
+    public String CubeId{
+      get{ return _c.UniqueId;}}
 
-    public CubeEventReporter(JsonTcpCommunication com){
+    public CubeEventReporter(JsonTcpCommunication com, Cube c){
       _com = com;
+      _c = c;
+      Reporters.Add(this);
+      ReportAllEvents();
     }
 
-    public void ReportAllEvents (Cube c)
+    private void ReportAllEvents ()
     {
       //report all the possible event!
-      c.ButtonEvent += ButtonNotification;
-      c.FlipEvent += FlipNotification;
-      c.NeighborAddEvent += NeighborAddNotification;
-      c.NeighborRemoveEvent += NeighborRemoveNotification;
-      c.ShakeStartedEvent += ShakeStartedNofitication;
-      c.ShakeStoppedEvent += ShackStoppedNotification;
-      c.TiltEvent += TiltNotification;
+
+      _c.ButtonEvent += ButtonNotification;
+      _c.FlipEvent += FlipNotification;
+      _c.NeighborAddEvent += NeighborAddNotification;
+      _c.NeighborRemoveEvent += NeighborRemoveNotification;
+      _c.ShakeStartedEvent += ShakeStartedNofitication;
+      _c.ShakeStoppedEvent += ShackStoppedNotification;
+      _c.TiltEvent += TiltNotification;
     }
 
     private void TiltNotification (Cube c, int x, int y, int z)
@@ -108,6 +116,15 @@ namespace SiftDriver.Events
       msg.Add("devId", c.UniqueId);
       msg.Add("params", parameters);
       _com.SendEventMessage(msg);
+    }
+
+    public static bool ExistsReporter(String cubeId){
+      foreach(CubeEventReporter r in Reporters){
+        if(r.CubeId.Equals(cubeId)){
+          return true;
+        }
+      }
+      return false;
     }
   }
 }
