@@ -91,7 +91,6 @@ namespace SiftDriver.Utils
 
       context.MoveTo(0, 64 - (pHeight /2));
       CairoHelper.ShowLayout(context, pango);
-
       sr.Flush();
       byte[] data = sr.Data;
 //      Log.Debug("about to go throught the data... length is: "+data.Length);
