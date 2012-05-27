@@ -7,7 +7,10 @@ using SiftDriver.Communication.Protocols;
 
 namespace SiftDriver
 {
+	
+  public delegate void Ticking();
   public interface AppManager{
+    event Ticking Ticked;
     CubeSet AvailableCubes {
       get;}
     void SetupAppManager(CubeSet cSet, string appID);
@@ -16,6 +19,7 @@ namespace SiftDriver
       get;}
     Cube this[String id]{ get;}
     void TurnOffDriver();
+    void Tick();
   }
   public sealed class AppManagerAccess
   {
@@ -28,6 +32,7 @@ namespace SiftDriver
       private CubeSet _availableCubes;
       private string _appID;
       //public CubeSet AvailableCubes{ get{return _availableCubes;}}
+      public event Ticking Ticked;
       private GeneralCommunicationProtocol _generalComm;
       public Cube this[String id]{
         get{
@@ -74,6 +79,14 @@ namespace SiftDriver
 
       public void TurnOffDriver(){
         throw new Exception("the game is over");
+      }
+      
+      public void Tick ()
+			{
+				if (Ticked != null) {
+					Ticked ();
+//					Log.Debug ("AppManager.ticked");
+				}
       }
     }
 

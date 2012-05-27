@@ -22,49 +22,50 @@ namespace SiftDriver.Utils
 //      Log.Debug("message supposely printed...");
     }
     public static void DisplayMessageV2 (Cube c, string msg, SiftColor color)
-    {
-      ImageSurface sr = new ImageSurface(Format.ARGB32, 128, 128);
-      Cairo.Context context = new Cairo.Context(sr);
+        {
+            ImageSurface sr = new ImageSurface (Format.ARGB32, 128, 128);
+            Cairo.Context context = new Cairo.Context (sr);
 
 //      context.Color = new SiftColor(72, 255, 170).ToCairo();
-      context.Color = new Cairo.Color(0, 0, 0, 0);
-      context.Paint();
+            context.Color = new Cairo.Color (0, 0, 0, 0);
+            context.Paint ();
 
-      context.Color = color.ToCairo();
-      context.SelectFontFace("Arial", FontSlant.Normal, FontWeight.Normal);
-      context.SetFontSize(16);
-      TextExtents te = context.TextExtents(msg);
+            context.Color = color.ToCairo ();
+            context.SelectFontFace ("Arial", FontSlant.Normal, FontWeight.Normal);
+            context.SetFontSize (16);
+            TextExtents te = context.TextExtents (msg);
 //      context.MoveTo(0.5 - te.Width  / 2 - te.XBearing,
 //          0.5 - te.Height / 2 - te.YBearing);
-      Log.Debug("text Extents: "+te.Width+"*"+te.Height);
-      context.MoveTo(64 - (te.Width/2), 64+ (te.Height /2));
-      context.ShowText(msg);
+            Log.Debug ("text Extents: " + te.Width + "*" + te.Height);
+            context.MoveTo (64 - (te.Width / 2), 64 + (te.Height / 2));
+            context.ShowText (msg);
 
-      //ok now everything is draw we just have to go through every thing and take out value per value...
-      sr.Flush();
-      byte[] data = sr.Data;
+            //ok now everything is draw we just have to go through every thing and take out value per value...
+            sr.Flush ();
+            byte[] data = sr.Data;
 //      Log.Debug("about to go throught the data... length is: "+data.Length);
 //      Log.Debug("for information 128*128 is: "+(128*128));
 //      Log.Debug("for information 128*128*24 is: "+(128*128*24));
 
-      for(int i = 0, x = 0, y = 0; i < data.Length; i+= 4, x++){
-        if(x >= 128){
-          x = 0; y ++;
-        }
-        byte b = data[i],
-             g = data[i+1],
-             r = data[i+2],
-             a = data[i+3];
-        if(a!=0 || r != 0 || g != 0 || b != 0){
-          SiftColor sc = new SiftColor(r, g, b);
-          //Log.Debug("sc = "+r+"|"+g+"|"+b+" for the point "+x+";"+y);
-          c.FillRect(sc.ToSifteo(), x, y, 1, 1);
-        }else{
-          // we ignore it
-        }
-      }
-      ((IDisposable) context).Dispose ();
-      sr.Dispose();
+            for (int i = 0, x = 0, y = 0; i < data.Length; i+= 4, x++) {
+                if (x >= 128) {
+                    x = 0;
+                    y ++;
+                }
+                byte b = data [i],
+                g = data [i + 1],
+                r = data [i + 2],
+                a = data [i + 3];
+                if (a != 0 || r != 0 || g != 0 || b != 0) {
+                    SiftColor sc = new SiftColor (r, g, b);
+                    //Log.Debug("sc = "+r+"|"+g+"|"+b+" for the point "+x+";"+y);
+                    c.FillRect (sc.ToSifteo (), x, y, 1, 1);
+                } else {
+                    // we ignore it
+                }
+            }
+            ((IDisposable)context).Dispose ();
+            ((IDisposable) sr).Dispose();
     }
     public static void DisplayMessageV3 (Cube c, string msg, SiftColor color)
     {
@@ -76,7 +77,7 @@ namespace SiftDriver.Utils
       context.Paint();
       Pango.Layout pango = Pango.CairoHelper.CreateLayout(context);
 
-      pango.FontDescription = FontDescription.FromString("Arial 16");
+      pango.FontDescription = Pango.FontDescription.FromString("Arial 16");
       pango.Alignment = Alignment.Center;
       pango.Wrap = WrapMode.WordChar;
       pango.Width = 128 * 1016;
@@ -115,7 +116,7 @@ namespace SiftDriver.Utils
       }
       ((IDisposable) context).Dispose ();
       ((IDisposable) pango).Dispose ();
-      sr.Dispose();
+      ((IDisposable) sr).Dispose();
 
     }
 

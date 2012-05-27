@@ -1,7 +1,11 @@
+using Cairo;
+
 using System;
 using System.Collections.Generic;
+
 using SiftDriver;
 using SiftDriver.Utils;
+
 using Sifteo;
 
 namespace SiftDriver.Utils

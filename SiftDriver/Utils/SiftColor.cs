@@ -7,6 +7,8 @@ namespace SiftDriver.Utils
 {
   public struct SiftColor
   {
+    public static readonly SiftColor WHITE = new SiftColor(255, 255, 255);
+  
     public int r, g, b;
 
     public Cairo.Color ToCairo(){
@@ -40,7 +42,55 @@ namespace SiftDriver.Utils
       //TODO let to be done
       r = 0; g = 0; b = 0;
     }
-
+    
+    public static SiftColor operator-(SiftColor colorA, SiftColor colorB)
+    {
+      return new SiftColor(colorA.r - colorB.r, colorA.g - colorB.g, colorA.b - colorB.b);
+    }
+    public static SiftColor operator+(SiftColor colorA, SiftColor colorB)
+    {
+      return new SiftColor(colorA.r + colorB.r, colorA.g + colorB.g, colorA.b + colorB.b);
+    }
+    public static SiftColor operator*(float factor, SiftColor color)
+    {
+      return new SiftColor((int) (factor*color.r),
+        (int) (factor*color.g),
+        (int) (factor*color.b));
+    }
+		public static SiftColor operator*(double factor, SiftColor color)
+    {
+      return new SiftColor((int) (factor*color.r),
+        (int) (factor*color.g),
+        (int) (factor*color.b));
+    }
+    
+    public static bool operator== (SiftColor colorA, SiftColor colorB)
+		{
+			return colorA.r == colorB.r &&
+				colorA.g == colorB.g && 
+				colorA.b == colorB.b;
+    }
+    public static bool operator!= (SiftColor colorA, SiftColor colorB)
+		{
+			return ! (colorA == colorB);
+		}
+		
+		public static bool operator> (SiftColor colorA, SiftColor colorB)
+		{
+			return colorA.r > colorB.r && colorA.g > colorB.g && colorA.b > colorB.b;
+		}
+		public static bool operator< (SiftColor colorA, SiftColor colorB)
+		{
+			return colorA.r < colorB.r && colorA.g < colorB.g && colorA.b < colorB.b;
+		}
+		public static bool operator>= (SiftColor colorA, SiftColor colorB)
+		{
+			return colorA.r >= colorB.r && colorA.g >= colorB.g && colorA.b >= colorB.b;
+		}
+		public static bool operator<= (SiftColor colorA, SiftColor colorB)
+		{
+			return colorA.r <= colorB.r && colorA.g <= colorB.g && colorA.b <= colorB.b;
+		}
   }
 }
 

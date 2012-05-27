@@ -19,38 +19,47 @@ namespace SiftDriver.Communication.Protocols
     private JsonReaderThread _readerThread;
     private Thread _containingThread;
     private AppManager _appMgr = AppManagerAccess.Instance;
+    private event Ticking _onTick;
 
-    public GeneralCommunicationProtocol(TcpClient socket) : base(socket)
-    {
-      _readerThread = new JsonReaderThread(this);
-      _containingThread = new Thread(new ThreadStart(_readerThread.ReadingLoop));
-      //then setup the callbacks and run it!
-      _readerThread.IncomingMessage += delegate(Dictionary<string,object> msg){
-        if(msg == null){
-          Log.Info("the comminucation with the API is over or lost, we should do something about it");
-          AppManagerAccess.Instance.TurnOffDriver();
-        }
-        if(msg.ContainsKey("flow")
-           && msg["flow"].GetType().Equals(typeof(String))
-           && msg.ContainsKey("msg")
-           && msg["msg"].GetType().Equals(typeof(Dictionary<String,Object>))
-           ){
-          switch((string) msg["flow"]){
-          case "ctrl":
-            onCtrlMessage((Dictionary<string, object>) msg["msg"]);
-            break;
-          case "event":
-            onEventMessage((Dictionary<string, object>) msg["msg"]);
-            break;
-          default:
-            Log.Info("this message is invalid: <<<"+ new JsonWriter().Write(msg)+">>>");
-            break;
-          }
-        }else{
-          Log.Info("this message is invalid: <<<"+ new JsonWriter().Write(msg)+">>>");
-        }
-      };
-
+    public GeneralCommunicationProtocol (TcpClient socket) : base(socket)
+		{
+			_readerThread = new JsonReaderThread (this);
+			_containingThread = new Thread (new ThreadStart (_readerThread.ReadingLoop));
+			//then setup the callbacks and run it!
+			_readerThread.IncomingMessage += delegate(Dictionary<string,object> msg) {
+				if (msg == null) {
+					Log.Info ("the comminucation with the API is over or lost, we should do something about it");
+					AppManagerAccess.Instance.TurnOffDriver ();
+				}
+				if (msg.ContainsKey ("flow")
+					&& msg ["flow"].GetType ().Equals (typeof(String))
+					&& msg.ContainsKey ("msg")
+					&& msg ["msg"].GetType ().Equals (typeof(Dictionary<String,Object>))
+           ) {
+					switch ((string)msg ["flow"]) {
+					case "ctrl":
+						onCtrlMessage ((Dictionary<string, object>)msg ["msg"]);
+						break;
+					case "event":
+						onEventMessage ((Dictionary<string, object>)msg ["msg"]);
+						break;
+					default:
+						Log.Info ("this message is invalid: <<<" + new JsonWriter ().Write (msg) + ">>>");
+						break;
+					}
+				} else {
+					Log.Info ("this message is invalid: <<<" + new JsonWriter ().Write (msg) + ">>>");
+				}
+			};
+			_appMgr.Ticked += delegate() {
+//				Log.Debug ("about to call GeneralComPro._onTick()");
+				if (_onTick != null) {
+					_onTick ();
+//					Log.Debug ("called");
+				} //else {
+//					Log.Debug("not called");
+//				}
+			};
       _containingThread.Start();
     }
 
@@ -72,23 +81,46 @@ namespace SiftDriver.Communication.Protocols
       }
     }
 
-    private void onEventMessage(Dictionary<string,object> msg){
-      Log.Info("the following message has been received: <<<"+ new JsonWriter().Write(msg)+">>>" );
-      //this is just a simple ugly draft: it needs to be done in a much better way later! this treatment need to be moved to the folder Command and to be sent to a CommandFactory and then apply from here
-      String command  = JsonProtocolHelper.AssertTypeInDic<String>(msg, "command");
-      Log.Debug (DateTime.Now.ToLongTimeString()+" >> dealing with the command: "+command);
-      Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>> (msg, "params");
-
-      switch(command){
-      case "show_color":
-        this.ShowColor(param);
-        break;
-      case "show_json_picture":
-        this.ShowJsonPicture(param);
-        break;
-      case "show_message":
-        this.ShowMessage(param);
-        break;
+    private void onEventMessage (Dictionary<string,object> msg)
+		{
+			Log.Info ("the following message has been received: <<<" + new JsonWriter ().Write (msg) + ">>>");
+			//this is just a simple ugly draft: it needs to be done in a much better way later! this treatment need to be moved to the folder Command and to be sent to a CommandFactory and then apply from here
+			String command = JsonProtocolHelper.AssertTypeInDic<String> (
+				msg,
+				"command"
+			);
+			Log.Debug (DateTime.Now.ToLongTimeString () + " >> dealing with the command: " + command);
+			Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>> (
+				msg,
+				"params"
+			);
+			String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]> (
+				param,
+				"cubes"
+			);
+			
+			// we need to stop the ticking only for the cube newly affected to something in the recevied command!
+			BrowseCubes (delegate(Cube c) {
+				FaderHelper fh = FaderLookup.getFaderHelper (c);
+				_onTick -= fh.Fade;
+			}, affectedCubes );
+			
+			switch (command) {
+			case "show_color":
+				this.ShowColor (affectedCubes, param);
+				break;
+			case "show_json_picture":
+				this.ShowJsonPicture (affectedCubes, param);
+				break;
+			case "show_picture":
+				this.ShowPicture (affectedCubes, param);
+				break;
+			case "show_message":
+				this.ShowMessage (affectedCubes, param);
+				break;
+			case "fade_color":
+				this.FadeColor (affectedCubes, param);
+				break;
       default:
         break;
       }
@@ -125,28 +157,33 @@ namespace SiftDriver.Communication.Protocols
       }
     }
 
-    private void ShowColor(Dictionary<string, object> param){
-      //then read which color is asked
+    private void ShowColor (String[] affectedCubes, Dictionary<string, object> param)
+		{
+			//then read which color is asked
 //      Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>>(msg, "params");
-      //read the consered cubes
-      String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]>(param, "cubes");
-      //read the rgb value!
-      Dictionary<string, object> colors = JsonProtocolHelper.AssertTypeInDic<Dictionary<String, Object>>(param, "color");
-      Color fillingColor =
-        new Color(
-          JsonProtocolHelper.AssertTypeInDic<int>(colors,"r"),
-          JsonProtocolHelper.AssertTypeInDic<int>(colors,"g"),
-          JsonProtocolHelper.AssertTypeInDic<int>(colors,"b")
-          );
-      BrowseCubes( delegate(Cube c) {
-          c.FillScreen(fillingColor);
-          //TextDisplayer.DisplayMessage(c,"this is a color", new SiftColor(Color.White));
-          c.Paint();
+			//read the consered cubes
+			//read the rgb value!
+			Dictionary<string, object> colors = JsonProtocolHelper.AssertTypeInDic<Dictionary<String, Object>> (
+				param,
+				"color"
+			);
+			Color fillingColor =
+        new Color (
+          JsonProtocolHelper.AssertTypeInDic<int> (colors, "r"),
+          JsonProtocolHelper.AssertTypeInDic<int> (colors, "g"),
+          JsonProtocolHelper.AssertTypeInDic<int> (colors, "b")
+			);
+			BrowseCubes (delegate(Cube c) {
+//          c.FillScreen(fillingColor);
+//          //TextDisplayer.DisplayMessage(c,"this is a color", new SiftColor(Color.White));
+//          c.Paint();
+				//the new way of doing this:
+				CubeScreenManager mgr = ScreenManagerLookup.getScreenManager (c);
+				mgr.DisplayColor (fillingColor);
         }, affectedCubes);
     }
-    private void ShowJsonPicture(Dictionary<string, object> param) {
+    private void ShowJsonPicture(String[] affectedCubes, Dictionary<string, object> param) {
 //      Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>> (msg, "params");
-      String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]>(param, "cubes");
       //JsonPicture picture = JsonPicture.createFromDictionary(JsonProtocolHelper.AssertTypeInDic<Dictionary<String, Object>>(param, "picture"));
       object objPicture = JsonProtocolHelper.AssertField(param, "picture");
       JsonPicture picture = new JsonReader().Read<JsonPicture>(new JsonWriter().Write(objPicture));
@@ -159,25 +196,62 @@ namespace SiftDriver.Communication.Protocols
         }, affectedCubes);
 
     }
-    private void ShowMessage(Dictionary<string, object> param){
-      String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]>(param, "cubes");
-      String text_msg = JsonProtocolHelper.AssertTypeInDic<String>(param, "text_msg");
-      //Dictionary<string, object> colors = JsonProtocolHelper.AssertTypeInDic<Dictionary<String, Object>>(param, "color");
-//      SiftColor textColor = new SiftColor(colors);
-      SiftColor textColor = new SiftColor(255,255,255);
+    private void ShowPicture (String[] affectedCubes, Dictionary<string, object> param)
+		{
+			int[] pixels_str = JsonProtocolHelper.AssertTypeInDic<int[]> (
+				param,
+				"picture"
+			);
+			byte[] pixels_bytes = new byte[pixels_str.Length];
+			for (int i = 0; i < pixels_str.Length; i++) {
+//				pixels_bytes [i] = Byte.Parse (pixels_str [i]);
+				pixels_bytes [i] = (byte)pixels_str [i];
+			}
+			BrowseCubes (delegate(Cube c) {
+				CubeScreenManager mgr = ScreenManagerLookup.getScreenManager (c);
+				mgr.DisplayPicture (pixels_bytes);
+			}, affectedCubes);
+    }
+    private void ShowMessage (String[] affectedCubes, Dictionary<string, object> param)
+		{
+			String text_msg = JsonProtocolHelper.AssertTypeInDic<String> (
+				param,
+				"text_msg"
+			);
+			Dictionary<string, object> colors = JsonProtocolHelper.AssertTypeInDic<Dictionary<String, Object>>(param, "color");
+      SiftColor textColor = new SiftColor(colors);
+//			SiftColor textColor = new SiftColor (255, 255, 255);
 //      Color textColor =
 //        new Color(
 //          JsonProtocolHelper.AssertTypeInDic<int>(colors,"r"),
 //          JsonProtocolHelper.AssertTypeInDic<int>(colors,"g"),
 //          JsonProtocolHelper.AssertTypeInDic<int>(colors,"b")
 //          );
-      BrowseCubes(delegate(Cube c) {
-        TextDisplayer.DisplayMessage(c, text_msg, textColor);
-        c.Paint();
-        }, affectedCubes);
+			BrowseCubes (delegate(Cube c) {
+				CubeScreenManager mgr = ScreenManagerLookup.getScreenManager (c);
+				mgr.WriteText (text_msg, textColor.ToSifteo());
+			}, affectedCubes);
     }
 
-
+		private void FadeColor (String[] affectedCubes, Dictionary<string, object> param)
+		{
+			Dictionary<string, object> colors = JsonProtocolHelper.AssertTypeInDic<Dictionary<String, Object>> (
+				param,
+				"color"
+			);
+			SiftColor fadingColor =
+        new SiftColor (
+          JsonProtocolHelper.AssertTypeInDic<int> (colors, "r"),
+          JsonProtocolHelper.AssertTypeInDic<int> (colors, "g"),
+          JsonProtocolHelper.AssertTypeInDic<int> (colors, "b")
+			);
+			BrowseCubes (delegate(Cube c) {
+				FaderHelper fh = FaderLookup.getFaderHelper (c);
+				fh.Color = fadingColor;
+				//startFading: 
+				_onTick += fh.Fade;
+			}, affectedCubes );
+		}
 
     private class JsonReaderThread {
       private volatile bool _running = true;

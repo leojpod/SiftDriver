@@ -24,9 +24,12 @@ namespace SiftDriver
       Log.Debug("Setup() over");
     }
 
-    override public void Tick()
-    {
-      //Log.Debug("Tick()");
+    override public void Tick ()
+		{
+			//Log.Debug("Tick()");
+			if(this.IsIdle){
+				_appMgr.Tick ();
+			}
     }
 
     // development mode only
