@@ -20,9 +20,12 @@ namespace SiftDriver
       get; private set;
     }
     //[DataMember(Name="cubeId")]
-    public string[] CubesId{
+    public string[] Devices{
       get; private set;
     }
+		public string[] Capacities{
+			get; private set;
+		}
 
     public string ProtocolVersion{
       get; private set;
@@ -31,17 +34,19 @@ namespace SiftDriver
     {
       AppMgrId = appId;
       Cube[] cubes = set.toArray();
-      CubesId = new string[cubes.Length];
+      Devices = new string[cubes.Length];
       int i = 0;
       foreach(Cube c in cubes){
-        CubesId[i++] = c.UniqueId;
+        Devices[i++] = c.UniqueId;
       }
 
       //TODO_LATER: get the protocol version from a file!
-      Type = "SifteoCubes";
+      Type = "SifteoCube";
       //TODO_LATER: find a way to create a unique ID (using the mac address for instance?)
       Id = "myUniqueIdThatIsNotARealOneYet";
       ProtocolVersion = "0.3";
+			Capacities = new string[]{
+				"show_color", "show_text", "show_fade", "show_picture", "report_events"};
     }
   }
 }

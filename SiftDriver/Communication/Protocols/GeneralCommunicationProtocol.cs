@@ -96,7 +96,7 @@ namespace SiftDriver.Communication.Protocols
 			);
 			String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]> (
 				param,
-				"cubes"
+				"devices"
 			);
 			
 			// we need to stop the ticking only for the cube newly affected to something in the recevied command!
@@ -249,6 +249,7 @@ namespace SiftDriver.Communication.Protocols
 				FaderHelper fh = FaderLookup.getFaderHelper (c);
 				fh.Color = fadingColor;
 				//startFading: 
+				Log.Debug("starting to fade");
 				_onTick += fh.Fade;
 			}, affectedCubes );
 		}

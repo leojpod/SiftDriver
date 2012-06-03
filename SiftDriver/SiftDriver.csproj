@@ -37,16 +37,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="Sifteo">
-      <HintPath>..\..\..\..\..\..\..\..\..\Sifteo\Sifteo-SDK-1_1_2\bin\Runtimes\mono\Current\sifteo\Sifteo.dll</HintPath>
-    </Reference>
-    <Reference Include="JsonFx">
-      <HintPath>..\..\..\..\..\..\..\..\..\Sifteo\Sifteo-SDK-1_1_2\bin\Runtimes\mono\Current\sifteo\JsonFx.dll</HintPath>
-    </Reference>
     <Reference Include="Mono.Cairo" />
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Private>False</Private>
+    </Reference>
+    <Reference Include="JsonFx">
+      <HintPath>..\..\..\..\..\..\..\..\Applications\Siftrunner.app\Contents\Resources\Runtimes\Mono\Current\sifteo\JsonFx.dll</HintPath>
+    </Reference>
+    <Reference Include="Sifteo">
+      <HintPath>..\..\..\..\..\..\..\..\Applications\Siftrunner.app\Contents\Resources\Runtimes\Mono\Current\sifteo\Sifteo.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -42,7 +42,7 @@ namespace SiftDriver.Utils
 		{
 //			Color = SiftColor.WHITE;
 //			_c = c;
-			_delta = 0.025; //i.e. fade in 40 steps
+			_delta = 0.05; //i.e. fade in 40 steps
 			_mgr = ScreenManagerLookup.getScreenManager (c);
     }
     
