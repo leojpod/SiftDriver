@@ -64,14 +64,21 @@ namespace SiftDriver.Communication.Protocols
     }
 
     private void onCtrlMessage(Dictionary<string,object> msg){
-      Log.Info("the following message has been received: <<<"+ new JsonWriter().Write(msg)+">>>" );
+      Log.Info("the following control message has been received: <<<"+ new JsonWriter().Write(msg)+">>>" );
       try{
         string command = JsonProtocolHelper.AssertTypeInDic<string>(msg, "command");
         switch(command){
-        case "reportAllEvents":
+        case "report_all_events":
           Log.Debug("dealing with the command reportAllEvents");
-          String[] devices = JsonProtocolHelper.AssertTypeInDic<String[]>(msg, "params");
-          StartAllEventsReporting(devices);
+          Dictionary<string,object> param = JsonProtocolHelper.AssertTypeInDic<Dictionary<String,Object>> (
+						msg,
+						"params"
+					);
+					String[] affectedCubes = JsonProtocolHelper.AssertTypeInDic<String[]> (
+						param,
+						"devices"
+					);
+					StartAllEventsReporting(affectedCubes);
           break;
         default:
           break;
@@ -83,7 +90,7 @@ namespace SiftDriver.Communication.Protocols
 
     private void onEventMessage (Dictionary<string,object> msg)
 		{
-			Log.Info ("the following message has been received: <<<" + new JsonWriter ().Write (msg) + ">>>");
+			Log.Info ("the following event message has been received: <<<" + new JsonWriter ().Write (msg) + ">>>");
 			//this is just a simple ugly draft: it needs to be done in a much better way later! this treatment need to be moved to the folder Command and to be sent to a CommandFactory and then apply from here
 			String command = JsonProtocolHelper.AssertTypeInDic<String> (
 				msg,

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Sifteo;
 
@@ -26,6 +27,9 @@ namespace SiftDriver
 		public string[] Capacities{
 			get; private set;
 		}
+		public int[] ScreenSize{
+			get; private set;
+		}
 
     public string ProtocolVersion{
       get; private set;
@@ -47,6 +51,7 @@ namespace SiftDriver
       ProtocolVersion = "0.3";
 			Capacities = new string[]{
 				"show_color", "show_text", "show_fade", "show_picture", "report_events"};
+			ScreenSize = new int[]{128, 128};
     }
   }
 }
