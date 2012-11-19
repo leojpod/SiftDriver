@@ -1,10 +1,12 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="SiftDriver/Communication/Protocols/GeneralCommunicationProtocol.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Disassembly">
     <Files>
       <File FileName="SiftDriver/Communication/Protocols/GeneralCommunicationProtocol.cs" Line="77" Column="12" />
       <File FileName="SiftDriver/Communication/Protocols/AuthenticationProtocol.cs" Line="17" Column="61" />
       <File FileName="SiftDriver/AppManager.cs" Line="19" Column="12" />
+      <File FileName="SiftDriver/Events/CubeEventReporter.cs" Line="212" Column="24" />
+      <File FileName="Disassembly" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -15,9 +17,10 @@
             <Node name="Communication" expanded="True">
               <Node name="Protocols" expanded="True" />
             </Node>
-            <Node name="Events" expanded="True" />
+            <Node name="Events" expanded="True">
+              <Node name="CubeEventReporter.cs" selected="True" />
+            </Node>
             <Node name="Utils" expanded="True" />
-            <Node name="AppManager.cs" selected="True" />
           </Node>
         </State>
       </Pad>

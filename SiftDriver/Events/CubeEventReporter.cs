@@ -170,14 +170,14 @@ namespace SiftDriver.Events
     private void ShackStoppedNotification (Cube c, int duration)
     {
       Dictionary<String, Object> parameters = new Dictionary<String, Object>();
-      String msg = "shackingOver";
+      String msg = "shakingOver";
       parameters.Add("duration", duration);
       this.NotifyEvent(msg, c, parameters);
     }
 
     private void ShakeStartedNofitication (Cube c)
     {
-      String msg = "shackingStarting";
+      String msg = "shakingStarting";
       this.NotifyEvent(msg, c);
     }
 
@@ -209,7 +209,7 @@ namespace SiftDriver.Events
         if(newOrientationIsUp){
           msg = "flipedUp";
         }else{
-          msg = "flipDown";
+          msg = "flipedDown";
         }
         this.NotifyEvent(msg, c);
       }
